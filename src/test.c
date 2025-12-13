@@ -19,34 +19,6 @@ WINDOW *Map(int height, int width){
 
 
 
-
-// void SnakeUpdate(Snake *snake, int max_x, int max_y, int key){
-    
-    
-//     // while (true) {
-//     //     int key = wgetch()
-//     // }
-//     // int snakeHead;
-//     // /* snake movement */
-//     // while((snakeHead = getch()) != KEY_F(1)){
-//     //     if (snakeHead == KEY_UP) y--;
-//     //     else if (snakeHead == 'w') y--;
-//     //     else if (snakeHead == KEY_DOWN) y++;
-//     //     else if (snakeHead == 's') y++;
-//     //     else if (snakeHead == KEY_RIGHT) x++;
-//     //     else if (snakeHead == 'd') x++;
-//     //     else if (snakeHead == KEY_LEFT) x--;
-//     //     else if (snakeHead == 'a') x--;
-//     //     /* draw snake */
-//     //     mvaddch(y, x, '@');
-//     // }
-// }
-
-// void Snake_draw(WINDOW *win, Snake *sn){
-    
-// }
-
-
 typedef struct {
     int x;
     int y;
@@ -59,16 +31,21 @@ typedef struct {
     int dir_y;
 } Snake;
 
-void SnakeUpdate(Snake *snake, int max_x, int max_y, int key){
+// TODO: error snake moving 
+void SnakeUpdate(Snake *snake, int max_y, int max_x, int key){
     // game keybindings
     if (key == KEY_UP || key == 'w') {
-        snake -> dir_y = -1; snake -> dir_x = 0;
+        snake->dir_y = -1; snake ->dir_x = 0;
+        // snake->dir_y = 1; 
     } else if (key == KEY_DOWN || key == 's') {
-        snake -> dir_y = 1; snake -> dir_x = 0;
+        snake->dir_y = 1; snake ->dir_x = 0;
+        // snake->dir_y = -1; 
     } else if (key == KEY_LEFT || key == 'a') {
-        snake -> dir_y = 0; snake -> dir_x = -1;
+        snake->dir_y = 0; snake ->dir_x = -1;
+        // snake ->dir_x = -1;
     } else if (key == KEY_RIGHT || key == 'd') {
-        snake -> dir_y = 0; snake -> dir_x = 1;
+        snake->dir_y = 0; snake ->dir_x = 1;
+        // snake ->dir_x = 1;
     } else {
         return;
     }
@@ -88,7 +65,7 @@ void SnakeUpdate(Snake *snake, int max_x, int max_y, int key){
 
 void SnakeDraw(WINDOW *win, Snake *snake){
     for (int i = 0; i < snake->length; i++){
-        mvwaddch(win, snake->body[i].y, snake->body[i].x, '@');
+        mvwaddch(win, snake->body[i].x, snake->body[i].y, '@');
     }
 }
 
@@ -101,7 +78,6 @@ int main(void){
     timeout(100);
     
     /* hide cursor */
-    
     // noecho();
     curs_set(0);
     /* create exit */
@@ -113,15 +89,16 @@ int main(void){
     // snake.dir_y = 11;
     int winHeight = 20;
     int winWidth = 40;
-    WINDOW *win = Map(winHeight, winWidth);        
+    WINDOW *win = Map(winHeight, winWidth); 
+    keypad(win, TRUE);
     Snake snake;
-    snake.length = 3;
+    snake.length = 1;
     snake.dir_x = 1;
     snake.dir_y = 0;
     
     snake.body[0] = (Point){10,10};
-    snake.body[1] = (Point){10,9};
-    snake.body[2] = (Point){10,8};
+    // snake.body[1] = (Point){10,10};
+    // snake.body[2] = (Point){10,10};
 
     while (true) {
         int key = wgetch(win);
