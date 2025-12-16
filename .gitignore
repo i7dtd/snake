@@ -1,0 +1,20 @@
+# Build output
+bin/
+*.o
+*.obj
+*.out
+*.exe
+
+# Logs and temporary files
+*.log
+*.tmp
+
+# Editor / IDE files
+.vscode/
+.idea/
+*.swp
+*~
+.DS_Store
+
+# Core dumps
+core

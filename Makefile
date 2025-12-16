@@ -1,39 +1,37 @@
-# Компилятор и флаги
+# Compiler and flags
 CC = gcc
 CFLAGS = -Wall -Wextra -std=c11 -pedantic
 LDFLAGS = -lncurses
 
-# Имена файлов
+# File names
 TARGET = program
-SRC = src/test.c
-OBJ = $(SRC:.c=.o)
+SRC = src/main.c src/snake.c src/map.c src/food.c
+BIN_DIR = bin
 
-# Основное правило по умолчанию (будет выполняться при просто 'make')
+# Default target (runs when you type 'make')
 all: build
 
-# Правило сборки (скомпилировать и слинковать)
-build: $(TARGET)
+# Build the executable (compile and link in one step)
+build: $(BIN_DIR)/$(TARGET)
 
-# Создание исполняемого файла
-$(TARGET): $(OBJ)
-	$(CC) $(CFLAGS) -o bin/$(TARGET) $(OBJ) $(LDFLAGS)
+# Create executable directly from source files
+$(BIN_DIR)/$(TARGET): $(SRC)
+	@mkdir -p $(BIN_DIR)
+	$(CC) $(CFLAGS) -o $@ $^ $(LDFLAGS)
 
-# Компиляция .c файлов в .o файлы
-%.o: %.c
-	$(CC) $(CFLAGS) -c $< -o $@
-
-# Запуск программы
+# Run the program
 run: build
-	bin/$(TARGET)
+	$(BIN_DIR)/$(TARGET)
 
-# Отладка с gdb (опционально)
+# Debug build with gdb support
 debug: CFLAGS += -g
 debug: build
-	gdb ./$(TARGET)
+	gdb $(BIN_DIR)/$(TARGET)
 
-# Очистка скомпилированных файлов
+# Clean all compiled files
 clean:
-	rm -f $(OBJ) $(TARGET)
+	rm -f $(BIN_DIR)/$(TARGET)
+	find . -name "*.o" -delete
 
-# Указываем, что эти цели не являются файлами
+# Mark these targets as not files
 .PHONY: all build run debug clean

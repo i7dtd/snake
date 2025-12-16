@@ -1,97 +1,168 @@
 #include <ncurses.h>
 #include <stdbool.h>
 #include <stdlib.h>
+#include <string.h>
+#include <time.h>
+#include <unistd.h>
+
+#include "map.h"
+#include "snake.h"
+#include "food.h"
+#include "gameOver.h"
+
+#define HEIGHT 10
+#define WIDTH 10
 
 
-// void Map(){
-//     int world[COLS - 2 * 5];
-//     for (int i = 0; i < COLS - 2 * 5; i++){
-//         world[i] = rand() % LINES/2 + 1;
-//     }
+
+// WINDOW *Map(int height, int width){
+//     int xMax; int yMax;
+//     getmaxyx(stdscr, yMax, xMax);
+    
+//     WINDOW *win = newwin(height, width, (yMax / 2) - (height / 2), (xMax / 2) - (width / 2));
+        
+//     box(win, 0, 0);
+//     // wrefresh(win);
+//     return win;
 // }
 
-int main(void){
 
-    int snake;
-    int y = 11, x = 11;
+
+// typedef struct {
+//     int y;
+//     int x;
+// } Point;
+
+// typedef struct {
+//     Point body[100];
+//     int length;
+//     int dir_x;
+//     int dir_y;
+// } Snake;
+
+
+
+// void Food(Point *food, Snake *snake,int max_y, int max_x){
+//     while (true) { 
+//         food->y = rand() % (max_y - 2) + 1;
+//         food->x = rand() % (max_x - 2) + 1;
+        
+//         int isFree = 1;
+        
+//         for (int i = 0; i < snake->length; i++) {
+//             if (snake->body[i].y == food->y && snake->body[i].x == food->x) {
+//                 isFree = 0;
+//                 break;
+//             }
+//         }
+        
+//         if (isFree) {
+//             break;
+//         }
+//     }
     
+// }
+
+
+
+// void SnakeDraw(WINDOW *win, Snake *snake){
+//     wattron(win, COLOR_PAIR(1));
+    
+//     for (int i = 0; i < snake->length; i++){
+//         mvwaddch(win, snake->body[i].y, snake->body[i].x, 0xDB);
+//     }
+    
+//     wattroff(win, COLOR_PAIR(1));
+// }
+
+
+bool GameOver(Snake *snake, int max_y, int max_x){
+    int headX = snake->body[0].x;
+    int headY = snake->body[0].y;
+    
+    return (headX <= 0 || headX >= max_x - 1|| headY <= 0 || headY >= max_y - 1);
+}
+
+int main(void){
+    /* basic start */
     initscr();
-    keypad(stdscr, 1);
+    cbreak();
+    start_color();
+    init_pair(1, COLOR_GREEN, COLOR_BLACK);
+    init_pair(2, COLOR_RED, COLOR_BLACK);
     noecho();
-    curs_set(0);
+    refresh();
+    timeout(100);
     
-    // a = getch();
+    srand(time(NULL)); // for random generate food
+    
+    /* hide cursor */
+    // noecho();
+    curs_set(0);
+    /* create exit */
+    keypad(stdscr, 1);
     printw("Prees F1 to exit");
     
+    Point food;
+    // snake.dir_x = 11;
+    // snake.dir_y = 11;
+    int winHeight = 20;
+    int winWidth = 40;
+    WINDOW *win = Map(winHeight, winWidth); 
+    wtimeout(win, 333);
+    keypad(win, TRUE);
+    Snake snake;
+    snake.length = 3;
+    snake.dir_x = 1;
+    snake.dir_y = 0;
     
-    int height; int width; int start_y; int start_x;
-    height = 10;
-    width = 20;
-    start_x = start_y = 10;
-    
-    WINDOW * win = newwin(height, width, start_x, start_y);
-    refresh();
-    
-    box(win, 0, 0);
-    wprintw(win, "BOX");
-    wrefresh(win);
-    
-   
-    char map_data[10][20] = {
-            "####################",
-            "#                  #",
-            "#                  #",
-            "#                  #",
-            "#                  #",
-            "#                  #",
-            "#                  #",
-            "#                  #",
-            "####################",
-        };
+    snake.body[0] = (Point){10,10};
+    snake.body[1] = (Point){10,9};
+    snake.body[2] = (Point){10,8};
 
-    while ((snake = getch()) != KEY_F(1)) {
-        clear();
-        
-        int map_height = 10;
-        int map_width = 20;
-        int view_x = 0; // Смещение по X
-        int view_y = 0; // Смещение по Y
-
-        
-        for (int y = 0; y < map_height && view_y + y < map_height; y++) {
-            for (int x = 0; x < map_width && view_x + x < map_width; x++) {
-                mvaddch(y, x, map_data[view_y + y][view_x + x]);
-                // if (x == '#' || y == '#'){
-                //     printw("u heat the wall");
-                //     return 1;
-                // }
-            }
-        }
+    Food(&food, &snake, winHeight, winWidth);
  
+    bool game_over = false;
+    int score = 0;
+    while (!game_over) {
+        int key = wgetch(win);
         
-        if (snake == KEY_UP) y--;
-        else if (snake == 'w') y--;
-        else if (snake == KEY_DOWN) y++;
-        else if (snake == 's') y++;
-        else if (snake == KEY_RIGHT) x++;
-        else if (snake == 'd') x++;
-        else if (snake == KEY_LEFT) x--;
-        else if (snake == 'a') x--;
+        Point head = snake.body[0];
+        if (head.y == food.y && head.x == food.x) {
+            snake.length++;
+            score++;
+            Food(&food, &snake, winHeight, winWidth);
+        }
         
-        // if ("")
+        SnakeUpdate(&snake, winHeight  , winWidth ,key, &game_over); 
         
-        mvaddch(y, x, '@');
-        // if (y++ == '#') {
-        //     printw("u heat the wall");
-        // }
+        if (GameOver(&snake, winHeight , winWidth )){
+            printf("Game over\n");
+            break;
+        }
+        
+        werase(win);            // clear win
+        box(win, 0, 0);         // draw borders
+        mvwprintw(win, 0, 1, "[Score %d]",score);
+        SnakeDraw(win, &snake);
+        wattron(win, COLOR_PAIR(2));
+        mvwaddch(win, food.y, food.x, '*');
+        wattroff(win, COLOR_PAIR(2));   
+        wrefresh(win);          // ncurses -> terminal ??
     }
     
     
-    
+    // game over scene
+    clear();
+    mvprintw(LINES/2, COLS/2-5, "GAME OVER!");    
+    mvprintw(LINES/2 + 1, COLS/2-4, "Score %d", score);
+    refresh();
+    sleep(2);
     getch();
     
-    endwin();
     
+    delwin(win);
+    endwin();
     
     return 0;
 }
