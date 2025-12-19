@@ -56,7 +56,7 @@ void SnakeDraw(WINDOW *win, Snake *snake){
     wattron(win, COLOR_PAIR(1));
     
     for (int i = 0; i < snake->length; i++){
-        mvwaddch(win, snake->body[i].y, snake->body[i].x, 0xDB);
+        mvwaddch(win, snake->body[i].y, snake->body[i].x, ACS_BLOCK);
     }
     
     wattroff(win, COLOR_PAIR(1));

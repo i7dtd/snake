@@ -1,7 +1,6 @@
 #include <ncurses.h>
 #include <stdbool.h>
 #include <stdlib.h>
-#include <string.h>
 #include <time.h>
 #include <unistd.h>
 
@@ -13,67 +12,6 @@
 #define HEIGHT 10
 #define WIDTH 10
 
-
-
-// WINDOW *Map(int height, int width){
-//     int xMax; int yMax;
-//     getmaxyx(stdscr, yMax, xMax);
-    
-//     WINDOW *win = newwin(height, width, (yMax / 2) - (height / 2), (xMax / 2) - (width / 2));
-        
-//     box(win, 0, 0);
-//     // wrefresh(win);
-//     return win;
-// }
-
-
-
-// typedef struct {
-//     int y;
-//     int x;
-// } Point;
-
-// typedef struct {
-//     Point body[100];
-//     int length;
-//     int dir_x;
-//     int dir_y;
-// } Snake;
-
-
-
-// void Food(Point *food, Snake *snake,int max_y, int max_x){
-//     while (true) { 
-//         food->y = rand() % (max_y - 2) + 1;
-//         food->x = rand() % (max_x - 2) + 1;
-        
-//         int isFree = 1;
-        
-//         for (int i = 0; i < snake->length; i++) {
-//             if (snake->body[i].y == food->y && snake->body[i].x == food->x) {
-//                 isFree = 0;
-//                 break;
-//             }
-//         }
-        
-//         if (isFree) {
-//             break;
-//         }
-//     }
-    
-// }
-
-
-
-// void SnakeDraw(WINDOW *win, Snake *snake){
-//     wattron(win, COLOR_PAIR(1));
-    
-//     for (int i = 0; i < snake->length; i++){
-//         mvwaddch(win, snake->body[i].y, snake->body[i].x, 0xDB);
-//     }
-    
-//     wattroff(win, COLOR_PAIR(1));
-// }
 
 
 bool GameOver(Snake *snake, int max_y, int max_x){
